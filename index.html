@@ -39,6 +39,12 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
+        .note {
+            font-weight: normal;
+            font-size: 13px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
         input[type="number"] {
             width: 100%;
             padding: 10px;
@@ -46,6 +52,25 @@
             border-radius: 4px;
             box-sizing: border-box;
             font-size: 16px;
+        }
+        .radio-group {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+        .radio-group label {
+            display: inline-block;
+            margin-right: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            color: #d35400;
+        }
+        .radio-group input[type="radio"] {
+            transform: scale(1.3);
+            margin-right: 5px;
         }
         .formula-box {
             background-color: #e8f4f8;
@@ -77,10 +102,17 @@
     <div class="card">
         <h3>1. Số lượng rút kiểm</h3>
         <div class="input-group">
+            <label>Chọn hệ số tính:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="heso" value="5" checked onchange="tinhCongThuc1()"> Dùng hệ số 5</label>
+                <label><input type="radio" name="heso" value="10" onchange="tinhCongThuc1()"> Dùng hệ số 10</label>
+            </div>
+        </div>
+        <div class="input-group">
             <label for="hang_ve">Số lượng hàng về:</label>
             <input type="number" id="hang_ve" placeholder="Nhập số lượng hàng về..." oninput="tinhCongThuc1()">
         </div>
-        <div class="formula-box" id="ct1_hienthi">Công thức: (5 x [Số lượng hàng về]) / 100</div>
+        <div class="formula-box" id="ct1_hienthi">Công thức: ([Hệ số] x [Số lượng hàng về]) / 100</div>
         <div class="result-box" id="kq1_hienthi">Kết quả: --</div>
     </div>
 
@@ -88,7 +120,7 @@
     <div class="card">
         <h3>2. Tỷ lệ rút kiểm</h3>
         <div class="input-group">
-            <label for="sl_rut_kiem_2">Số lượng rút kiểm:</label>
+            <label for="sl_rut_kiem_2">Số lượng rút kiểm: <span class="note">(Tự động điền từ phần 1, có thể tự nhập tay)</span></label>
             <input type="number" id="sl_rut_kiem_2" placeholder="Nhập số lượng rút kiểm..." oninput="tinhCongThuc2()">
         </div>
         <div class="formula-box" id="ct2_hienthi">Công thức: (10 x [Số lượng rút kiểm]) / 100</div>
@@ -99,12 +131,12 @@
     <div class="card">
         <h3>3. Tính % (Tỷ lệ phế trên mẫu rút kiểm)</h3>
         <div class="input-group">
-            <label for="sl_phe">Số lượng phế:</label>
-            <input type="number" id="sl_phe" placeholder="Nhập số lượng phế..." oninput="tinhCongThuc3()">
+            <label for="sl_rut_kiem_3">Số lượng rút kiểm: <span class="note">(Tự động điền từ phần 1, có thể tự nhập tay)</span></label>
+            <input type="number" id="sl_rut_kiem_3" placeholder="Nhập số lượng rút kiểm..." oninput="tinhCongThuc3()">
         </div>
         <div class="input-group">
-            <label for="sl_rut_kiem_3">Số lượng rút kiểm:</label>
-            <input type="number" id="sl_rut_kiem_3" placeholder="Nhập số lượng rút kiểm..." oninput="tinhCongThuc3()">
+            <label for="sl_phe">Số lượng phế:</label>
+            <input type="number" id="sl_phe" placeholder="Nhập số lượng phế..." oninput="tinhCongThuc3()">
         </div>
         <div class="formula-box" id="ct3_hienthi">Công thức: ([Số lượng phế] x 100) / [Số lượng rút kiểm]</div>
         <div class="result-box" id="kq3_hienthi">Kết quả: --</div>
@@ -114,34 +146,43 @@
     <div class="card">
         <h3>4. Tính % phế của đơn hàng (Tổng thể)</h3>
         <div class="input-group">
-            <label for="sl_bi">Số lượng bị (phế):</label>
-            <input type="number" id="sl_bi" placeholder="Nhập số lượng bị..." oninput="tinhCongThuc4()">
-        </div>
-        <div class="input-group">
             <label for="sl_tong">Số lượng tổng:</label>
             <input type="number" id="sl_tong" placeholder="Nhập số lượng tổng..." oninput="tinhCongThuc4()">
+        </div>
+        <div class="input-group">
+            <label for="sl_bi">Số lượng bị (phế):</label>
+            <input type="number" id="sl_bi" placeholder="Nhập số lượng bị..." oninput="tinhCongThuc4()">
         </div>
         <div class="formula-box" id="ct4_hienthi">Công thức: ([Số lượng bị] x 100) / [Số lượng tổng]</div>
         <div class="result-box" id="kq4_hienthi">Kết quả: --</div>
     </div>
 
     <script>
-        // Hàm tính công thức 1
+        // Hàm tính công thức 1 và TỰ ĐỘNG ĐIỀN cho phần 2, 3
         function tinhCongThuc1() {
+            let heSo = document.querySelector('input[name="heso"]:checked').value;
             let hangVe = document.getElementById('hang_ve').value;
             let ctBox = document.getElementById('ct1_hienthi');
             let kqBox = document.getElementById('kq1_hienthi');
 
             if (hangVe === "" || isNaN(hangVe)) {
-                ctBox.innerHTML = "Công thức: (5 x [Số lượng hàng về]) / 100";
+                ctBox.innerHTML = `Công thức: (${heSo} x [Số lượng hàng về]) / 100`;
                 kqBox.innerHTML = "Kết quả: --";
                 return;
             }
             
             // Tính toán và làm tròn
-            let ketQua = Math.round((5 * hangVe) / 100);
-            ctBox.innerHTML = `Công thức: (5 x ${hangVe}) / 100`;
+            let ketQua = Math.round((heSo * hangVe) / 100);
+            ctBox.innerHTML = `Công thức: (${heSo} x ${hangVe}) / 100`;
             kqBox.innerHTML = `Kết quả: ${ketQua}`;
+
+            // --- TỰ ĐỘNG NHẢY SỐ SANG Ô NHẬP CỦA PHẦN 2 VÀ 3 ---
+            document.getElementById('sl_rut_kiem_2').value = ketQua;
+            document.getElementById('sl_rut_kiem_3').value = ketQua;
+            
+            // Kích hoạt tính toán luôn cho phần 2 và 3
+            tinhCongThuc2();
+            tinhCongThuc3();
         }
 
         // Hàm tính công thức 2
