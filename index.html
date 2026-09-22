@@ -1,1 +1,339 @@
-lml>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Toán Tiêu Chuẩn Rút Kiểm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        /* Chỉnh layout Grid: 2 cột trên PC, 1 cột trên Mobile */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column; /* Đẩy phần kết quả xuống cuối */
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #2980b9;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .note {
+            font-weight: normal;
+            font-size: 13px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .radio-group {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+        .radio-group label {
+            display: inline-block;
+            margin-right: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            color: #d35400;
+        }
+        .radio-group input[type="radio"] {
+            transform: scale(1.3);
+            margin-right: 5px;
+        }
+        
+        /* Hiển thị công thức dạng phân số */
+        .formula-container {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin-top: auto; /* Đẩy box này xuống sát đáy card */
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-family: "Times New Roman", Times, serif; /* Đổi font cho giống toán học */
+        }
+        
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 10px;
+            vertical-align: middle;
+        }
+        
+        .numerator {
+            padding: 0 5px;
+        }
+        
+        .denominator {
+            border-top: 2px solid #333; /* Đường gạch phân số */
+            padding: 0 5px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .equals {
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        
+        .result-text {
+            font-weight: bold;
+            color: #d35400;
+            font-size: 20px;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tiêu Chuẩn Rút Kiểm</h1>
+
+    <div class="container">
+        <!-- Công thức 1 -->
+        <div class="card">
+            <h3>1. Số lượng rút kiểm</h3>
+            <div class="input-group">
+                <label>Chọn hệ số tính:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="heso" value="5" checked onchange="tinhCongThuc1()"> Dùng hệ số 5</label>
+                    <label><input type="radio" name="heso" value="10" onchange="tinhCongThuc1()"> Dùng hệ số 10</label>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="hang_ve">Số lượng hàng về:</label>
+                <input type="number" id="hang_ve" placeholder="Nhập số lượng hàng về..." oninput="tinhCongThuc1()">
+            </div>
+            
+            <div class="formula-container" id="box1">
+                <div class="fraction">
+                    <div class="numerator" id="tu_so_1">[Hệ số] x [SL hàng về]</div>
+                    <div class="denominator">100</div>
+                </div>
+                <div class="equals">=</div>
+                <div class="result-text" id="kq1_hienthi">?</div>
+            </div>
+        </div>
+
+        <!-- Công thức 2 -->
+        <div class="card">
+            <h3>2. Tỷ lệ rút kiểm</h3>
+            <div class="input-group">
+                <label for="sl_rut_kiem_2">Số lượng rút kiểm: <span class="note">(Tự động điền, có thể tự sửa)</span></label>
+                <input type="number" id="sl_rut_kiem_2" placeholder="Nhập số lượng rút kiểm..." oninput="tinhCongThuc2()">
+            </div>
+            
+            <div class="formula-container" id="box2">
+                <div class="fraction">
+                    <div class="numerator" id="tu_so_2">10 x [SL rút kiểm]</div>
+                    <div class="denominator">100</div>
+                </div>
+                <div class="equals">=</div>
+                <div class="result-text" id="kq2_hienthi">?</div>
+            </div>
+        </div>
+
+        <!-- Công thức 3 -->
+        <div class="card">
+            <h3>3. Tính % (Tỷ lệ phế trên mẫu)</h3>
+            <div class="input-group">
+                <label for="sl_rut_kiem_3">Số lượng rút kiểm: <span class="note">(Tự động điền, có thể tự sửa)</span></label>
+                <input type="number" id="sl_rut_kiem_3" placeholder="Nhập số lượng rút kiểm..." oninput="tinhCongThuc3()">
+            </div>
+            <div class="input-group">
+                <label for="sl_phe">Số lượng phế:</label>
+                <input type="number" id="sl_phe" placeholder="Nhập số lượng phế..." oninput="tinhCongThuc3()">
+            </div>
+            
+            <div class="formula-container" id="box3">
+                <div class="fraction">
+                    <div class="numerator" id="tu_so_3">[SL phế] x 100</div>
+                    <div class="denominator" id="mau_so_3">[SL rút kiểm]</div>
+                </div>
+                <div class="equals">=</div>
+                <div class="result-text" id="kq3_hienthi">?</div>
+            </div>
+        </div>
+
+        <!-- Công thức 4 -->
+        <div class="card">
+            <h3>4. Tính % phế của đơn hàng</h3>
+            <div class="input-group">
+                <label for="sl_tong">Số lượng tổng:</label>
+                <input type="number" id="sl_tong" placeholder="Nhập số lượng tổng..." oninput="tinhCongThuc4()">
+            </div>
+            <div class="input-group">
+                <label for="sl_bi">Số lượng bị (phế):</label>
+                <input type="number" id="sl_bi" placeholder="Nhập số lượng bị..." oninput="tinhCongThuc4()">
+            </div>
+            
+            <div class="formula-container" id="box4">
+                <div class="fraction">
+                    <div class="numerator" id="tu_so_4">[SL bị] x 100</div>
+                    <div class="denominator" id="mau_so_4">[SL tổng]</div>
+                </div>
+                <div class="equals">=</div>
+                <div class="result-text" id="kq4_hienthi">?</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hàm tính công thức 1
+        function tinhCongThuc1() {
+            let heSo = document.querySelector('input[name="heso"]:checked').value;
+            let hangVe = document.getElementById('hang_ve').value;
+            let tuSo = document.getElementById('tu_so_1');
+            let kqBox = document.getElementById('kq1_hienthi');
+
+            if (hangVe === "" || isNaN(hangVe)) {
+                tuSo.innerHTML = `${heSo} x [SL hàng về]`;
+                kqBox.innerHTML = "?";
+                kqBox.classList.remove("error");
+                return;
+            }
+            
+            let ketQua = Math.round((heSo * hangVe) / 100);
+            tuSo.innerHTML = `${heSo} x ${hangVe}`;
+            kqBox.innerHTML = ketQua;
+            kqBox.classList.remove("error");
+
+            // Tự động điền sang ô nhập của phần 2, 3
+            document.getElementById('sl_rut_kiem_2').value = ketQua;
+            document.getElementById('sl_rut_kiem_3').value = ketQua;
+            
+            tinhCongThuc2();
+            tinhCongThuc3();
+        }
+
+        // Hàm tính công thức 2
+        function tinhCongThuc2() {
+            let slRutKiem = document.getElementById('sl_rut_kiem_2').value;
+            let tuSo = document.getElementById('tu_so_2');
+            let kqBox = document.getElementById('kq2_hienthi');
+
+            if (slRutKiem === "" || isNaN(slRutKiem)) {
+                tuSo.innerHTML = "10 x [SL rút kiểm]";
+                kqBox.innerHTML = "?";
+                kqBox.classList.remove("error");
+                return;
+            }
+            
+            let ketQua = Math.round((10 * slRutKiem) / 100);
+            tuSo.innerHTML = `10 x ${slRutKiem}`;
+            kqBox.innerHTML = ketQua;
+            kqBox.classList.remove("error");
+        }
+
+        // Hàm tính công thức 3
+        function tinhCongThuc3() {
+            let slPhe = document.getElementById('sl_phe').value;
+            let slRutKiem = document.getElementById('sl_rut_kiem_3').value;
+            let tuSo = document.getElementById('tu_so_3');
+            let mauSo = document.getElementById('mau_so_3');
+            let kqBox = document.getElementById('kq3_hienthi');
+
+            // Cập nhật tử số/mẫu số dựa trên dữ liệu người dùng nhập
+            tuSo.innerHTML = (slPhe !== "") ? `${slPhe} x 100` : "[SL phế] x 100";
+            mauSo.innerHTML = (slRutKiem !== "") ? slRutKiem : "[SL rút kiểm]";
+
+            if (slPhe === "" || slRutKiem === "" || isNaN(slPhe) || isNaN(slRutKiem)) {
+                kqBox.innerHTML = "?";
+                kqBox.classList.remove("error");
+                return;
+            }
+
+            if (Number(slRutKiem) === 0) {
+                kqBox.innerHTML = "Lỗi chia 0!";
+                kqBox.classList.add("error");
+                return;
+            }
+            
+            let ketQua = Math.round((slPhe * 100) / slRutKiem);
+            kqBox.innerHTML = ketQua + "%";
+            kqBox.classList.remove("error");
+        }
+
+        // Hàm tính công thức 4
+        function tinhCongThuc4() {
+            let slBi = document.getElementById('sl_bi').value;
+            let slTong = document.getElementById('sl_tong').value;
+            let tuSo = document.getElementById('tu_so_4');
+            let mauSo = document.getElementById('mau_so_4');
+            let kqBox = document.getElementById('kq4_hienthi');
+
+            tuSo.innerHTML = (slBi !== "") ? `${slBi} x 100` : "[SL bị] x 100";
+            mauSo.innerHTML = (slTong !== "") ? slTong : "[SL tổng]";
+
+            if (slBi === "" || slTong === "" || isNaN(slBi) || isNaN(slTong)) {
+                kqBox.innerHTML = "?";
+                kqBox.classList.remove("error");
+                return;
+            }
+
+            if (Number(slTong) === 0) {
+                kqBox.innerHTML = "Lỗi chia 0!";
+                kqBox.classList.add("error");
+                return;
+            }
+            
+            let ketQua = Math.round((slBi * 100) / slTong);
+            kqBox.innerHTML = ketQua + "%";
+            kqBox.classList.remove("error");
+        }
+    </script>
+</body>
+</html>
+
